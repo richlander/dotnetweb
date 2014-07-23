@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        var meetupCount = 20;
+        var showMeetupSource = true;
+    </script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>    
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
+
+</head>
+<body>
+<div id="intro"/>
+<div id="features"/>
+
+<script>
+$(document).ready(function () {
+
+    var baseUrl = "https://dotnetweb.blob.core.windows.net/dotnetcatalog/";
+    var catalogJson = "catalog.json";
+    var requestUrl = baseUrl + catalogJson;
+
+//http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.js
+
+    require.config({
+        paths: {
+            "marked": "http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked"
+        }
+    });
+
+    $.support.cors = true;
+    $.ajax(baseUrl + "4.5/asp-net-user-voice.md").done(function(data) 
+    {
+        require(["marked"], function(marked) {
+        var renderer = new marked.Renderer();
+        renderer.image = function (href, title, text) {
+          return '<img src=\''+baseUrl+ '4.5/' +href+'\'width=500/>';
+        };
+        $("#intro").prepend(marked(data, {renderer: renderer}));
+        });
+    });
+
+  });
+</script>
+<style>
+.feature h1 {font-size: 18px;}
+</style>
+</body>
+</html>
