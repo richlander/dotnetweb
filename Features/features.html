@@ -47,7 +47,7 @@
                         $.each(category.items, function(key2,item) {
                             $.ajax(baseUrl + cat + item.content).done(function(data) 
                                 {
-                                    var icon = baseUrl + cat + item.tile;
+                                    var icon = baseUrl + cat + item.icon;
                                     var renderer = new marked.Renderer();
                                     renderer.image = function (href, title, text) {
                                         return '<img src=\''+baseUrl+ category.name +'/' +href+'\'width=500/>';
