@@ -9,61 +9,6 @@
     </script>
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>    
     <script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
-    <script>
-        require.config({
-            paths: {
-                "marked": "http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
-                "jquery": "http://code.jquery.com/jquery-1.11.1",
-                "bootstrap": "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min"
-            }
-        });
-
-        require(["marked","jquery"], function(marked, $) {
-
-            $(document).ready(function () {
-                var baseUrl = "https://dotnetweb.blob.core.windows.net/dotnetcatalog/";
-                var catalogJson = "catalog.json";
-                var requestUrl = baseUrl + catalogJson;
-
-                $.support.cors = true;
-                $.getJSON(requestUrl, function (data) {
-                    document.title = data.name;
-
-                    $.ajax(baseUrl + data.content).done(function(data) 
-                    {
-                        $("#intro").prepend(marked(data));
-                    });
-
-                    $.each(data.categories, function (key, category) {
-                        var categoryName = category.name;
-                        var cat = category.name +"/";
-                        while(categoryName.indexOf(".") != -1)
-                        {
-                            categoryName = categoryName.replace(".","");
-                        }
-
-                        var target = "cat" + categoryName;
-                        $("#features").append("<h2>" + category.name + " Features</h2><div class=feature id=" + target+"></div>");
-                        $.each(category.items, function(key2,item) {
-                            $.ajax(baseUrl + cat + item.content).done(function(data) 
-                                {
-                                    var icon = baseUrl + cat + item.icon;
-                                    var renderer = new marked.Renderer();
-                                    renderer.image = function (href, title, text) {
-                                        return '<img src=\''+baseUrl+ category.name +'/' +href+'\'width=500/>';
-                                    };
-                                    renderer.heading = function (text, level) {
-                                        var headingIcon = level == 1 ? "<img src=" + icon + " width=100 style=\"padding-right:20px;\"></img>" : "";
-                                        return "<h" + level + ">" + headingIcon + text + "</h1>";
-                                    };
-                                    $("#" + target).append(marked(data,{renderer:renderer}));
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    </script>  
     <style>
         .feature h1 {font-size: 18px;}
     </style>      
@@ -71,6 +16,60 @@
 <body>
 <div id="intro"/>
 <div id="features"/>
+<script>
+    require.config({
+        paths: {
+            "marked": "http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
+            "jquery": "http://code.jquery.com/jquery-1.11.1",
+            "bootstrap": "http://ajax.aspnetcdn.com/ajax/bootstrap/3.2.0/bootstrap.min.js"
+        }
+    });
 
+    require(["marked","jquery"], function(marked, $) {
+
+        $(document).ready(function () {
+            var baseUrl = "https://dotnetweb.blob.core.windows.net/dotnetcatalog/";
+            var catalogJson = "catalog.json";
+            var requestUrl = baseUrl + catalogJson;
+
+            $.support.cors = true;
+            $.getJSON(requestUrl, function (data) {
+                document.title = data.name;
+
+                $.ajax(baseUrl + data.content).done(function(data) 
+                {
+                    $("#intro").prepend(marked(data));
+                });
+
+                $.each(data.categories, function (key, category) {
+                    var categoryName = category.name;
+                    var cat = category.name +"/";
+                    while(categoryName.indexOf(".") != -1)
+                    {
+                        categoryName = categoryName.replace(".","");
+                    }
+
+                    var target = "cat" + categoryName;
+                    $("#features").append("<h2>" + category.name + " Features</h2><div class=feature id=" + target+"></div>");
+                    $.each(category.items, function(key2,item) {
+                        $.ajax(baseUrl + cat + item.content).done(function(data) 
+                            {
+                                var icon = baseUrl + cat + item.icon;
+                                var renderer = new marked.Renderer();
+                                renderer.image = function (href, title, text) {
+                                    return '<img src=\''+baseUrl+ category.name +'/' +href+'\'width=500/>';
+                                };
+                                renderer.heading = function (text, level) {
+                                    var headingIcon = level == 1 ? "<img src=" + icon + " width=100 style=\"padding-right:20px;\"></img>" : "";
+                                    return "<h" + level + ">" + headingIcon + text + "</h1>";
+                                };
+                                $("#" + target).append(marked(data,{renderer:renderer}));
+                        });
+                    });
+                });
+            });
+        });
+    });
+</script>  
 </body>
 </html>
